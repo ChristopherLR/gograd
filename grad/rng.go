@@ -18,11 +18,11 @@ func (r *RNG) RandomU32() uint64 {
 	return ((r.State * 0x2545F4914F6CDD1D) >> 32) & 0xFFFFFFFF
 }
 
-func (r *RNG) Random() float32 {
-	return float32(r.RandomU32() >> 8) / 16777216.0
+func (r *RNG) Random() float64 {
+	return float64(r.RandomU32() >> 8) / 16777216.0
 }
 
-func (r *RNG) Uniform(a, b float32) float32 {
+func (r *RNG) Uniform(a, b float64) float64 {
 	return a + (b-a) * r.Random()
 }
 

@@ -1,13 +1,39 @@
 package main
 
 import (
-	"github.com/ChristopherLR/gograd/grad"
 	"fmt"
+	"os"
+
+	"github.com/ChristopherLR/gograd/grad"
+	"github.com/go-echarts/go-echarts/v2/charts"
+	"github.com/go-echarts/go-echarts/v2/opts"
 )
 
+var rng = grad.NewRNG(42)
+
 func main() {
+	tr, _, _ := grad.GenDataYinYang(rng, 10000, 0.1, 0.5)
 
-	n := grad.MakeNeuron(4, true)
+	sc := charts.NewScatter()
+	sc.SetGlobalOptions(
+		charts.WithTitleOpts(opts.Title{Title: "Yin–Yang data"}),
+		charts.WithXAxisOpts(opts.XAxis{Name: "x"}),
+		charts.WithYAxisOpts(opts.YAxis{Name: "y"}),
+	)
 
-	fmt.Println(n)
+	series := map[uint8][]opts.ScatterData{}
+	for _, p := range tr {
+		series[p.C] = append(series[p.C], opts.ScatterData{Name: "", Value: []float64{p.X, p.Y}})
+	}
+
+	sc.AddSeries("yin", series[0])
+	sc.AddSeries("yang", series[1])
+	sc.AddSeries("dots", series[2])
+
+	f, _ := os.Create("yinyang.html")
+	err := sc.Render(f)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
+

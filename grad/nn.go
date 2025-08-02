@@ -32,3 +32,14 @@ func MakeNeuron(nin int, nonlin bool) *Neuron {
 	}
 	return &n
 }
+
+func (n *Neuron) Parameters() []*Value {
+	return append([]*Value{n.B}, n.W...)
+}
+
+func (n *Neuron) ZeroGrad() {
+	for _, v := range n.Parameters() {
+		v.Grad = 0.0
+	}
+}
+
