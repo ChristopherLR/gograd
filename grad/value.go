@@ -2,6 +2,7 @@ package grad
 
 import (
 	"fmt"
+	"math"
 	"strings"
 )
 
@@ -34,8 +35,29 @@ func (v *Value) Add(other *Value) *Value {
 func (v *Value) Mul(other *Value) *Value {
 	out := Value{Data: v.Data * other.Data, prev: []*Value{v, other}, op: "*"}
 	out.backward = func() {
-		v.Grad = other.Data * out.Grad
-		other.Grad = v.Data * out.Grad
+		v.Grad += other.Data * out.Grad
+		other.Grad += v.Data * out.Grad
+	}
+	return &out
+}
+
+func (v *Value) ReLU() *Value {
+	out := Value{Data: v.Data, prev: []*Value{v}, op: "ReLU"}
+	if v.Data < 0 {
+		out.Data = 0
+	}
+	out.backward = func() {
+		if out.Data > 0 {
+			v.Grad += out.Grad
+		}
+	}
+	return &out
+}
+
+func (v *Value) Tanh() *Value {
+	out := Value{Data: math.Tanh(v.Data), prev: []*Value{v}, op: "tanh"}
+	out.backward = func() {
+		v.Grad += (1 - out.Data*out.Data) * out.Grad
 	}
 	return &out
 }
