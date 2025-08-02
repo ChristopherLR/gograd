@@ -13,7 +13,7 @@ type Value struct {
 	op       string
 }
 
-func New(x float64) *Value { return &Value{Data: x} }
+func NewVal(x float64) *Value { return &Value{Data: x} }
 
 func (v *Value) String() string {
 	if len(v.op) > 0 {
@@ -31,10 +31,14 @@ func (v *Value) Add(other *Value) *Value {
 	return &out
 }
 
-// func (v *Value) Mul(other *Value) *Value {
-// 	out := Value
-
-// }
+func (v *Value) Mul(other *Value) *Value {
+	out := Value{Data: v.Data * other.Data, prev: []*Value{v, other}, op: "*"}
+	out.backward = func() {
+		v.Grad = other.Data * out.Grad
+		other.Grad = v.Data * out.Grad
+	}
+	return &out
+}
 
 func (v *Value) Backward() {
 	topo := []*Value{}

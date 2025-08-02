@@ -1,14 +1,13 @@
 package main
 
-import "github.com/ChristopherLR/micrograd_go/grad"
+import (
+	"github.com/ChristopherLR/gograd/grad"
+	"fmt"
+)
 
 func main() {
-	a := grad.New(1.4)
-	b := grad.New(1.3)
 
-	c := a.Add(b)
-	d := c.Add(a)
-	d.Backward()
+	n := grad.MakeNeuron(4, true)
 
-	grad.PrintTree(d, 0)
+	fmt.Println(n)
 }
