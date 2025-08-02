@@ -16,12 +16,10 @@ type Neuron struct {
 	Nonlin bool
 }
 
-var random = NewRNG(42)
-
 func NewNeuron(nin int, nonlin bool) *Neuron {
 	weights := make([]*Value, nin)
 	for i := range len(weights) {
-		weights[i] = NewVal((1 / math.Sqrt(float64(nin))) * float64(random.Uniform(-1, 1)))
+		weights[i] = NewVal((1 / math.Sqrt(float64(nin))) * float64(Random.Uniform(-1, 1)))
 	}
 
 	n := Neuron{
@@ -104,9 +102,6 @@ func (l *Layer) String() string {
 	return out
 }
 
-//    def parameters(self):
-//        return [p for layer in self.layers for p in layer.parameters()]
-
 type MLP struct {
 	Layers []*Layer
 }
@@ -119,7 +114,7 @@ func NewMLP(nin int, nouts []int) *MLP {
 	for i := 1; i < len(nouts)-1; i++ {
 		layers[i] = NewLayer(nouts[i-1], nouts[i], true)
 	}
-	layers[len(nouts) - 1] = NewLayer(nouts[len(nouts)-2], nouts[len(nouts)-1], false)
+	layers[len(nouts)-1] = NewLayer(nouts[len(nouts)-2], nouts[len(nouts)-1], false) // output
 
 	return &MLP{Layers: layers}
 }
@@ -129,6 +124,14 @@ func (m *MLP) Forward(xs []*Value) []*Value {
 		xs = l.Forward(xs)
 	}
 	return xs
+}
+
+func (m *MLP) Parameters() []*Value {
+	params := []*Value{}
+	for _, l := range m.Layers {
+		params = append(params, l.Parameters()...)
+	}
+	return params
 }
 
 func (m *MLP) String() string {

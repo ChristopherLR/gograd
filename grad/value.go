@@ -23,6 +23,11 @@ func (v *Value) String() string {
 	return fmt.Sprintf("(d=%v, g=%v)", v.Data, v.Grad)
 }
 
+func (v *Value) Neg() *Value {
+	nv := NewVal(-1)
+	return v.Mul(nv)
+}
+
 func (v *Value) Add(other *Value) *Value {
 	out := Value{Data: v.Data + other.Data, prev: []*Value{v, other}, op: "+"}
 	out.backward = func() {
@@ -37,6 +42,24 @@ func (v *Value) Mul(other *Value) *Value {
 	out.backward = func() {
 		v.Grad += other.Data * out.Grad
 		other.Grad += v.Data * out.Grad
+	}
+	return &out
+}
+
+func (v *Value) Div(other *Value) *Value {
+	out := Value{Data: v.Data / other.Data, prev: []*Value{v, other}, op: "/"}
+	out.backward = func() {
+		v.Grad += (1 / other.Data) * out.Grad
+		other.Grad += (-v.Data / (other.Data * other.Data)) * out.Grad
+	}
+	return &out
+}
+
+func (v *Value) Log() *Value {
+	// Natural log
+	out := Value{Data: math.Log(v.Data), prev: []*Value{v}, op: "log"}
+	out.backward = func() {
+		v.Grad += (1 / v.Data) * out.Grad
 	}
 	return &out
 }
@@ -58,6 +81,14 @@ func (v *Value) Tanh() *Value {
 	out := Value{Data: math.Tanh(v.Data), prev: []*Value{v}, op: "tanh"}
 	out.backward = func() {
 		v.Grad += (1 - out.Data*out.Data) * out.Grad
+	}
+	return &out
+}
+
+func (v *Value) Exp() *Value {
+	out := Value{Data: math.Exp(v.Data), prev: []*Value{v}, op: "exp"}
+	out.backward = func() {
+		v.Grad += out.Data * out.Grad
 	}
 	return &out
 }

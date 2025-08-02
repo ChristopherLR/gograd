@@ -9,7 +9,7 @@ import (
 )
 
 func GenGraph() {
-	tr, _, _ := GenDataYinYang(random, 10000, 0.1, 0.5)
+	tr, _, _ := GenDataYinYang(Random, 10000, 0.1, 0.5)
 
 	sc := charts.NewScatter()
 	sc.SetGlobalOptions(
@@ -20,7 +20,7 @@ func GenGraph() {
 
 	series := map[uint8][]opts.ScatterData{}
 	for _, p := range tr {
-		series[p.C] = append(series[p.C], opts.ScatterData{Name: "", Value: []float64{p.X, p.Y}})
+		series[p.Y] = append(series[p.Y], opts.ScatterData{Name: "", Value: []float64{p.X[0].Data, p.X[1].Data}})
 	}
 
 	sc.AddSeries("yin", series[0])

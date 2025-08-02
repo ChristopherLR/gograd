@@ -19,10 +19,11 @@ func (r *RNG) RandomU32() uint64 {
 }
 
 func (r *RNG) Random() float64 {
-	return float64(r.RandomU32() >> 8) / 16777216.0
+	return float64(r.RandomU32()>>8) / 16777216.0
 }
 
 func (r *RNG) Uniform(a, b float64) float64 {
-	return a + (b-a) * r.Random()
+	return a + (b-a)*r.Random()
 }
 
+var Random = NewRNG(42)

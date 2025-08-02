@@ -16,7 +16,7 @@ type AdamW struct {
 	T            int
 }
 
-func NewAdamW(parameters []*Value, lr float64) *AdamW {
+func NewAdamW(parameters []*Value, lr float64, weightDecay float64) *AdamW {
 	moments := make(map[*Value]*adamMoment, len(parameters))
 	for _, p := range parameters {
 		moments[p] = &adamMoment{m: 0, v: 0}
@@ -28,7 +28,7 @@ func NewAdamW(parameters []*Value, lr float64) *AdamW {
 		Beta1:       0.9,
 		Beta2:       0.95,
 		Eps:         1e-8,
-		WeightDecay: 0.0,
+		WeightDecay: weightDecay,
 		T:           0,
 	}
 }

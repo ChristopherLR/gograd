@@ -1,13 +1,12 @@
 package grad
 
-type Point struct {
-	X float64
-	Y float64
-	C uint8
+type Sample struct {
+	X []*Value // x, y
+	Y uint8
 }
 
-func GenDataYinYang(random RNG, n int, rSmall float64, rBig float64) (train, val, test []Point) {
-	pts := make([]Point, n)
+func GenDataYinYang(random RNG, n int, rSmall float64, rBig float64) (train, val, test []Sample) {
+	pts := make([]Sample, n)
 
 	rBigSq, rSmallSq := rBig*rBig, rSmall*rSmall
 
@@ -35,7 +34,7 @@ func GenDataYinYang(random RNG, n int, rSmall float64, rBig float64) (train, val
 		}
 	}
 
-	getSample := func(goalClass uint8) Point {
+	getSample := func(goalClass uint8) Sample {
 		for {
 			x := random.Uniform(0, 2*rBig)
 			y := random.Uniform(0, 2*rBig)
@@ -45,11 +44,7 @@ func GenDataYinYang(random RNG, n int, rSmall float64, rBig float64) (train, val
 			}
 
 			if c := whichClass(x, y); c == goalClass {
-				return Point{
-					X: (x/rBig - 1) * 2,
-					Y: (y/rBig - 1) * 2,
-					C: c,
-				}
+				return Sample{X: []*Value{NewVal((x/rBig - 1) * 2), NewVal((y/rBig - 1) * 2)}, Y: c}
 			}
 		}
 	}
